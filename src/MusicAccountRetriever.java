@@ -4,6 +4,7 @@ import futures.MusicAccountService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -38,9 +39,25 @@ public class MusicAccountRetriever {
         }
 
         for (Future<AmazonMusicAccount> result : results) {
-            //PARTICIPANTS: replace the following line.
-            accountList.add(new AmazonMusicAccount("Null", 0, "Null"));
+            try {
+                accountList.add(result.get());
+            } catch (InterruptedException e) {
+                System.out.println("MusicAccountStatsManager was interrupted.");
+            } catch (ExecutionException e) {
+                System.out.println("ImportAccountTask threw an exception.");
+            }
         }
+
+        /*
+        Complete the method retrieveAccounts(List<String> accountIDs). The method will take the list
+        of account IDs and use an ExecutorService to generate a list of Future<AmazonMusicAccount>
+        objects. You just have to iterate through that list to obtain the AmazonMusicAccount objects
+        from it.
+
+        Have a Try/Catch block for the exceptions you throw for obtaining the results.
+        For InterruptedException, print the message "MusicAccountStatsManager was interrupted."
+        For ExecutionException, print the message "ImportAccountTask threw an exception."
+         */
 
         accountExecutor.shutdown();
 
@@ -56,4 +73,5 @@ public class MusicAccountRetriever {
 
         return tasks;
     }
+
 }
